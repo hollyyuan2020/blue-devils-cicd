@@ -8,7 +8,7 @@ HTML = '''
 <!DOCTYPE html>
 <html>
 <head>
-  <title>UW-Stout Blue Devils</title>
+  <title>UW-Stout Blue Devils--CNIT 300</title>
   <style>
     body {
       font-family: Arial, sans-serif;
