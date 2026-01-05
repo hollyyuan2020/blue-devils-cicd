@@ -1,0 +1,39 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+# Step 1: Build the container
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'us-central1-docker.pkg.dev/$PROJECT_ID/blue-devils-apps/blue-devils-app:$SHORT_SHA'
+    - '-t'
+    - 'us-central1-docker.pkg.dev/$PROJECT_ID/blue-devils-apps/blue-devils-app:latest'
+    - '.'
+
+# Step 2: Push to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - '--all-tags'
+    - 'us-central1-docker.pkg.dev/$PROJECT_ID/blue-devils-apps/blue-devils-app'
+
+# Step 3: Deploy to Cloud Run
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'blue-devils-app'
+    - '--image'
+    - 'us-central1-docker.pkg.dev/$PROJECT_ID/blue-devils-apps/blue-devils-app:$SHORT_SHA'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
+
+# Tag images for security scanning
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/blue-devils-apps/blue-devils-app:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/blue-devils-apps/blue-devils-app:latest'
